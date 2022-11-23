@@ -12,7 +12,7 @@ import {
 function App() {
   ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
 
-  const cheapest = [
+  const byPrice = [
     "ask flatmates",
     "toast bread w/ butter and pepper",
     "scrambled eggs",
@@ -24,7 +24,7 @@ function App() {
     "fried maultaschen w/ ketchup",
   ];
 
-  const leastImpact = [
+  const byImpact = [
     "toast bread w/ butter and pepper",
     "ask flatmates",
     "pelmini",
@@ -36,8 +36,8 @@ function App() {
     "kaiserschmarn",
   ];
   const simpleData = (item) => {
-    const cost = cheapest.indexOf(item) + 1;
-    const impact = leastImpact.indexOf(item) + 1;
+    const cost = byPrice.indexOf(item) + 1;
+    const impact = byImpact.indexOf(item) + 1;
     const ratio = Math.round((impact / cost) * 100) / 100;
     return {
       item,
@@ -67,7 +67,7 @@ function App() {
             <th>Item</th>
             <th>Ratio [impact / cost]</th>
           </tr>
-          {cheapest
+          {byPrice
             .map(simpleData)
             .sort((a, b) => b.ratio - a.ratio)
             .map(({ cost, impact, item, ratio }) => (
@@ -82,7 +82,7 @@ function App() {
       </table>
       <div className="box">
         <Scatter
-          data={{ datasets: cheapest.map(formatedData) }}
+          data={{ datasets: byPrice.map(formatedData) }}
           options={{
             plugins: {
               legend: {
@@ -115,9 +115,6 @@ function App() {
         />
       </div>
       <div>
-        {console.log(
-          cheapest.map(simpleData).sort((a, b) => b.ratio - a.ratio)
-        )}
       </div>
       <tbody>
         <tr>
@@ -127,17 +124,17 @@ function App() {
         </tr>
         <tr>
           <td>
-            <pre>{`const cheapest = ` + JSON.stringify(cheapest, null, 2)}</pre>
+            <pre>{`const byPrice = ` + JSON.stringify(byPrice, null, 2)}</pre>
           </td>
           <td>
             <pre>
-              {`const leastImpact = ` + JSON.stringify(leastImpact, null, 2)}
+              {`const byImpact = ` + JSON.stringify(byImpact, null, 2)}
             </pre>
           </td>
           <td>
             <pre>
               {JSON.stringify(
-                cheapest.map(simpleData).sort((a, b) => b.ratio - a.ratio),
+                byPrice.map(simpleData).sort((a, b) => b.ratio - a.ratio),
                 null,
                 2
               )}
