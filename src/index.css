@@ -12,6 +12,10 @@ code {
     monospace;
 }
 
+.box {
+  padding: 50px;
+}
+
 #ratios {
   border-collapse: collapse;
   width: 100%;

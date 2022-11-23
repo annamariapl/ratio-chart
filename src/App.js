@@ -17,28 +17,27 @@ function App() {
     "toast bread w/ butter and pepper",
     "scrambled eggs",
     "omlette",
-    "Kaiserschmarn",
+    "kaiserschmarn",
     "onion garlic veggie",
     "pelmini",
-    "pasta pesto",
+    "echo p{a,e}st{a,o}",
     "fried maultaschen w/ ketchup",
   ];
 
-  const mostImpact = [
-    "Kaiserschmarn",
-    "pasta pesto",
-    "onion garlic veggie",
-    "omlette",
-    "scrambled eggs",
-    "fried maultaschen w/ ketchup",
-    "pelmini",
-    "ask flatmates",
+  const leastImpact = [
     "toast bread w/ butter and pepper",
+    "ask flatmates",
+    "pelmini",
+    "fried maultaschen w/ ketchup",
+    "scrambled eggs",
+    "omlette",
+    "onion garlic veggie",
+    "echo p{a,e}st{a,o}",
+    "kaiserschmarn",
   ];
-
   const simpleData = (item) => {
     const cost = cheapest.indexOf(item) + 1;
-    const impact = mostImpact.length - mostImpact.indexOf(item);
+    const impact = leastImpact.indexOf(item) + 1;
     const ratio = Math.round((impact / cost) * 100) / 100;
     return {
       item,
@@ -60,30 +59,6 @@ function App() {
 
   return (
     <div className="App">
-      <Scatter
-        data={{ datasets: cheapest.map(formatedData) }}
-        options={{
-          plugins: {
-            legend: {
-              display: false,
-              // position: "left",
-              // labels: {
-              //   usePointStyle: true,
-              // },
-            },
-          },
-          scales: {
-            y: {
-              title: { display: true, text: "impact /taste" },
-              beginAtZero: true,
-            },
-            x: {
-              title: { display: true, text: "cheapest" },
-              beginAtZero: true,
-            },
-          },
-        }}
-      />
       <table id="ratios">
         <tbody>
           <tr>
@@ -95,19 +70,81 @@ function App() {
           {cheapest
             .map(simpleData)
             .sort((a, b) => b.ratio - a.ratio)
-            .map(({ item, cost, impact, ratio }) => {
-              console.log("item", item);
-              return (
-                <tr key={cost}>
-                  <td>{cost}</td>
-                  <td>{impact}</td>
-                  <td>{item.toLowerCase()}</td>
-                  <td>{ratio}</td>
-                </tr>
-              );
-            })}
+            .map(({ cost, impact, item, ratio }) => (
+              <tr key={cost}>
+                <td>{cost}</td>
+                <td>{impact}</td>
+                <td>{item.toLowerCase()}</td>
+                <td>{ratio}</td>
+              </tr>
+            ))}
         </tbody>
       </table>
+      <div className="box">
+        <Scatter
+          data={{ datasets: cheapest.map(formatedData) }}
+          options={{
+            plugins: {
+              legend: {
+                display: false,
+                // position: "left",
+                // labels: {
+                //   usePointStyle: true,
+                // },
+              },
+            },
+            scales: {
+              y: {
+                title: {
+                  display: true,
+                  font: { size: "20px" },
+                  text: "low impact >>> big impact",
+                },
+                beginAtZero: true,
+              },
+              x: {
+                title: {
+                  display: true,
+                  font: { size: "20px" },
+                  text: "cheap >>> expensive",
+                },
+                beginAtZero: true,
+              },
+            },
+          }}
+        />
+      </div>
+      <div>
+        {console.log(
+          cheapest.map(simpleData).sort((a, b) => b.ratio - a.ratio)
+        )}
+      </div>
+      <tbody>
+        <tr>
+          <th>Input1</th>
+          <th>Input2</th>
+          <th>Output</th>
+        </tr>
+        <tr>
+          <td>
+            <pre>{`const cheapest = ` + JSON.stringify(cheapest, null, 2)}</pre>
+          </td>
+          <td>
+            <pre>
+              {`const leastImpact = ` + JSON.stringify(leastImpact, null, 2)}
+            </pre>
+          </td>
+          <td>
+            <pre>
+              {JSON.stringify(
+                cheapest.map(simpleData).sort((a, b) => b.ratio - a.ratio),
+                null,
+                2
+              )}
+            </pre>
+          </td>
+        </tr>
+      </tbody>
     </div>
   );
 }
