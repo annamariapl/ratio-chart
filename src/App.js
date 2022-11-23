@@ -36,36 +36,40 @@ function App() {
     "toast bread w/ butter and pepper",
   ];
 
-  const formatData = (item) => {
-    const cheapIndex = cheapest.indexOf(item) + 1;
-    const impactIndex = mostImpact.length - mostImpact.indexOf(item);
+  const simpleData = (item) => {
+    const cost = cheapest.indexOf(item) + 1;
+    const impact = mostImpact.length - mostImpact.indexOf(item);
+    const ratio = Math.round((impact / cost) * 100) / 100;
+    return {
+      item,
+      cost,
+      impact,
+      ratio,
+    };
+  };
 
-    const ratio = Math.round((impactIndex / cheapIndex) * 100) / 100;
-
+  const formatedData = (item) => {
+    const { cost, impact, ratio } = simpleData(item);
     return {
       label: `${item} | ratio:${ratio}`,
-      data: [{ x: cheapIndex, y: impactIndex }],
+      data: [{ x: cost, y: impact }],
       backgroundColor: "red",
       pointRadius: 10,
     };
   };
 
-  const datasets = cheapest.map(formatData);
-  const sortedDataSets = datasets.sort(
-    (a, b) => b.label.split(":")[1] - a.label.split("ratio:")[1]
-  );
-
   return (
     <div className="App">
       <Scatter
-        data={{ datasets: sortedDataSets }}
+        data={{ datasets: cheapest.map(formatedData) }}
         options={{
           plugins: {
             legend: {
-              position: "left",
-              labels: {
-                usePointStyle: true,
-              },
+              display: false,
+              // position: "left",
+              // labels: {
+              //   usePointStyle: true,
+              // },
             },
           },
           scales: {
@@ -80,6 +84,30 @@ function App() {
           },
         }}
       />
+      <table id="ratios">
+        <tbody>
+          <tr>
+            <th>Cost</th>
+            <th>Impact</th>
+            <th>Item</th>
+            <th>Ratio [impact / cost]</th>
+          </tr>
+          {cheapest
+            .map(simpleData)
+            .sort((a, b) => b.ratio - a.ratio)
+            .map(({ item, cost, impact, ratio }) => {
+              console.log("item", item);
+              return (
+                <tr key={cost}>
+                  <td>{cost}</td>
+                  <td>{impact}</td>
+                  <td>{item.toLowerCase()}</td>
+                  <td>{ratio}</td>
+                </tr>
+              );
+            })}
+        </tbody>
+      </table>
     </div>
   );
 }
