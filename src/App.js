@@ -97,32 +97,34 @@ function App() {
   return (
     <div className="App">
       <h1>Impact Tool</h1>
-      <tdbody>
-        <tr>
-          <th>sorted by cost (from low to high) </th>
-          <th>sorted by impact (from low to high)</th>
-        </tr>
-        <tr>
-          <td>
-            <textarea
-              name="byconst"
-              rows="15"
-              cols="50"
-              value={costInput}
-              onChange={(e) => setcostInput(e.target.value)}
-            ></textarea>
-          </td>
-          <td>
-            <textarea
-              name="byconst"
-              rows="15"
-              cols="50"
-              value={impactInput}
-              onChange={(e) => setimpactInput(e.target.value)}
-            ></textarea>
-          </td>
-        </tr>
-      </tdbody>
+      <table>
+        <tbody>
+          <tr>
+            <th>sorted by cost (from low to high) </th>
+            <th>sorted by impact (from low to high)</th>
+          </tr>
+          <tr>
+            <td>
+              <textarea
+                name="byconst"
+                rows="15"
+                cols="50"
+                value={costInput}
+                onChange={(e) => setcostInput(e.target.value)}
+              ></textarea>
+            </td>
+            <td>
+              <textarea
+                name="byconst"
+                rows="15"
+                cols="50"
+                value={impactInput}
+                onChange={(e) => setimpactInput(e.target.value)}
+              ></textarea>
+            </td>
+          </tr>
+        </tbody>
+      </table>
       <div style={{ display: "flex", flexWrap: "wrap" }}>
         <table id="ratios" style={{ maxWidth: "30%" }}>
           <tbody>
