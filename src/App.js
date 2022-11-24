@@ -36,17 +36,19 @@ function App() {
     "kaiserschmarn",
   ];
 
-  const [costArray, setcostArray] = useState(JSON.stringify(byCostInit, null, 2));
+  const [costArray, setcostArray] = useState(
+    JSON.stringify(byCostInit, null, 2)
+  );
   const [impactArray, setimpactArray] = useState(
     JSON.stringify(byImpactArray, null, 2)
   );
 
-  const costParsed = JSON.parse(costArray);
-  const impactParsed = JSON.parse(impactArray);
+  const byCost = JSON.parse(costArray);
+  const byImpact = JSON.parse(impactArray);
 
   const simpleData = (item) => {
-    const cost = costParsed.indexOf(item) + 1;
-    const impact = impactParsed.indexOf(item) + 1;
+    const cost = byCost.indexOf(item) + 1;
+    const impact = byImpact.indexOf(item) + 1;
     const ratio = Math.round((impact / cost) * 100) / 100;
     return {
       item,
@@ -56,7 +58,11 @@ function App() {
     };
   };
 
-  const formatedData = (item) => {
+  const sortedByRatio = byCost
+    .map(simpleData)
+    .sort((a, b) => b.ratio - a.ratio);
+
+  const scatterFormat = (item) => {
     const { cost, impact, ratio } = simpleData(item);
     return {
       label: `${item} | ratio:${ratio}`,
@@ -92,11 +98,6 @@ function App() {
               onChange={(e) => setimpactArray(e.target.value)}
             ></textarea>
           </td>
-          {console.log(
-            "OUTPUT sorted by ratio >>",
-            costParsed.map(simpleData).sort((a, b) => b.ratio - a.ratio)
-          )}
-          <td>find console.log() for ratio json</td>
         </tr>
       </tdbody>
       <div style={{ display: "flex" }}>
@@ -108,24 +109,21 @@ function App() {
               <th>Item</th>
               <th>Ratio [impact / cost]</th>
             </tr>
-            {costParsed
-              .map(simpleData)
-              .sort((a, b) => b.ratio - a.ratio)
-              .map(({ cost, impact, item, ratio }) => (
-                <tr key={cost}>
-                  <td>{cost}</td>
-                  <td>{impact}</td>
-                  <td>{item.toLowerCase()}</td>
-                  <td>{ratio}</td>
-                </tr>
-              ))}
+            {sortedByRatio.map(({ cost, impact, item, ratio }) => (
+              <tr key={cost}>
+                <td>{cost}</td>
+                <td>{impact}</td>
+                <td>{item.toLowerCase()}</td>
+                <td>{ratio}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
         <div className="box">
           <Scatter
+            data={{ datasets: byCost.map(scatterFormat) }}
             height={null} // must stay null, otherwise 'aspectRatio' won't work.  Adjust instead the wraping div.
             width={null} // must stay null, otherwise 'aspectRatio' won't work. Adjust instead the wraping div.
-            data={{ datasets: costParsed.map(formatedData) }}
             options={{
               aspectRatio: 1,
               plugins: {
@@ -135,7 +133,7 @@ function App() {
               },
               scales: {
                 y: {
-                  grace: "5%",
+                  grace: "10%",
                   position: "center",
                   title: {
                     display: true,
@@ -145,7 +143,7 @@ function App() {
                   },
                 },
                 x: {
-                  grace: "5%",
+                  grace: "10%",
                   position: "center",
                   title: {
                     display: true,
@@ -158,6 +156,9 @@ function App() {
             }}
           />
         </div>
+      </div>
+      <div>
+        <pre>{JSON.stringify(sortedByRatio, null, 2)}</pre>
       </div>
     </div>
   );
