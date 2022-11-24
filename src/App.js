@@ -10,41 +10,63 @@ import {
 } from "chart.js";
 
 function App() {
-  ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
+  ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend, {
+    id: "colorQuadrants",
+    beforeDraw: function (chart) {
+      const { chartArea } = chart;
+      const { ctx } = chart;
 
-  const byCostInit = [
-    "ask flatmates",
-    "toast bread w/ butter and pepper",
-    "scrambled eggs",
-    "omlette",
-    "kaiserschmarn",
-    "onion garlic veggie",
-    "pelmini",
-    "echo p{a,e}st{a,o}",
-    "fried maultaschen w/ ketchup",
-  ];
+      // Replace these IDs if you have given your axes IDs in the config
+      const xScale = chart.scales["x"];
+      const yScale = chart.scales["y"];
 
-  const byImpactArray = [
-    "toast bread w/ butter and pepper",
-    "ask flatmates",
-    "pelmini",
-    "fried maultaschen w/ ketchup",
-    "scrambled eggs",
-    "omlette",
-    "onion garlic veggie",
-    "echo p{a,e}st{a,o}",
-    "kaiserschmarn",
-  ];
+      const midX = xScale.getPixelForValue((chart._metasets.length + 1) / 2);
+      const midY = yScale.getPixelForValue((chart._metasets.length + 1) / 2);
 
-  const [costArray, setcostArray] = useState(
-    JSON.stringify(byCostInit, null, 2)
+      // Top left quadrant
+      ctx.fillStyle = "rgba(48, 205, 71, 0.3)";
+      ctx.fillRect(
+        chartArea.left,
+        chartArea.top,
+        midX - chartArea.left,
+        midY - chartArea.top
+      );
+
+      // Top right quadrant
+      ctx.fillStyle = "rgba(255, 205, 71, 0.3)";
+
+      ctx.fillRect(
+        midX,
+        chartArea.top,
+        chartArea.right - midX,
+        midY - chartArea.top
+      );
+
+      // Bottom right quadrant
+      ctx.fillStyle = "rgba(255, 99, 71, 0.3)";
+      ctx.fillRect(midX, midY, chartArea.right - midX, chartArea.bottom - midY);
+
+      // Bottom left quadrant
+      ctx.fillStyle = "rgba(255, 205, 71, 0.3)";
+      ctx.fillRect(
+        chartArea.left,
+        midY,
+        midX - chartArea.left,
+        chartArea.bottom - midY
+      );
+    },
+  });
+
+  const [costInput, setcostInput] = useState(
+    "ask flatmates\ntoast bread w/ butter and pepper\nscrambled eggs\nomlette\nkaiserschmarn\nonion garlic veggie\npelmini\necho pesto\nfried maultaschen w/ ketchup"
   );
-  const [impactArray, setimpactArray] = useState(
-    JSON.stringify(byImpactArray, null, 2)
+
+  const [impactInput, setimpactInput] = useState(
+    "toast bread w/ butter and pepper\nask flatmates\npelmini\nfried maultaschen w/ ketchup\nscrambled eggs\nomlette\nonion garlic veggie\necho pesto\nkaiserschmarn"
   );
 
-  const byCost = JSON.parse(costArray);
-  const byImpact = JSON.parse(impactArray);
+  const byCost = costInput.split("\n");
+  const byImpact = impactInput.split("\n");
 
   const simpleData = (item) => {
     const cost = byCost.indexOf(item) + 1;
@@ -74,9 +96,10 @@ function App() {
 
   return (
     <div className="App">
+      <h1>Impact Tool</h1>
       <tdbody>
         <tr>
-          <th>sorted by cost (from low high) </th>
+          <th>sorted by cost (from low to high) </th>
           <th>sorted by impact (from low to high)</th>
         </tr>
         <tr>
@@ -85,8 +108,8 @@ function App() {
               name="byconst"
               rows="15"
               cols="50"
-              value={costArray}
-              onChange={(e) => setcostArray(e.target.value)}
+              value={costInput}
+              onChange={(e) => setcostInput(e.target.value)}
             ></textarea>
           </td>
           <td>
@@ -94,13 +117,13 @@ function App() {
               name="byconst"
               rows="15"
               cols="50"
-              value={impactArray}
-              onChange={(e) => setimpactArray(e.target.value)}
+              value={impactInput}
+              onChange={(e) => setimpactInput(e.target.value)}
             ></textarea>
           </td>
         </tr>
       </tdbody>
-      <div style={{ display: "flex" }}>
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
         <table id="ratios" style={{ maxWidth: "30%" }}>
           <tbody>
             <tr>
@@ -127,29 +150,28 @@ function App() {
             options={{
               aspectRatio: 1,
               plugins: {
+                colorQuadrants: {},
                 legend: {
                   display: false,
                 },
               },
               scales: {
                 y: {
-                  grace: "10%",
                   position: "center",
                   title: {
                     display: true,
                     font: { size: "15px" },
-                    text: "big <<< low (impact)",
-                    padding: 100,
+                    text: "impact",
+                    padding: -70,
                   },
                 },
                 x: {
-                  grace: "10%",
                   position: "center",
                   title: {
                     display: true,
                     font: { size: "15px" },
-                    text: "cheap >>> expensive",
-                    padding: 100,
+                    text: "cost",
+                    padding: 10,
                   },
                 },
               },
