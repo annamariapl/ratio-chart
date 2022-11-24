@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Scatter } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -12,7 +12,7 @@ import {
 function App() {
   ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
 
-  const byPrice = [
+  const byCostInit = [
     "ask flatmates",
     "toast bread w/ butter and pepper",
     "scrambled eggs",
@@ -24,7 +24,7 @@ function App() {
     "fried maultaschen w/ ketchup",
   ];
 
-  const byImpact = [
+  const byImpactArray = [
     "toast bread w/ butter and pepper",
     "ask flatmates",
     "pelmini",
@@ -35,9 +35,18 @@ function App() {
     "echo p{a,e}st{a,o}",
     "kaiserschmarn",
   ];
+
+  const [costArray, setcostArray] = useState(JSON.stringify(byCostInit, null, 2));
+  const [impactArray, setimpactArray] = useState(
+    JSON.stringify(byImpactArray, null, 2)
+  );
+
+  const costParsed = JSON.parse(costArray);
+  const impactParsed = JSON.parse(impactArray);
+
   const simpleData = (item) => {
-    const cost = byPrice.indexOf(item) + 1;
-    const impact = byImpact.indexOf(item) + 1;
+    const cost = costParsed.indexOf(item) + 1;
+    const impact = impactParsed.indexOf(item) + 1;
     const ratio = Math.round((impact / cost) * 100) / 100;
     return {
       item,
@@ -53,95 +62,98 @@ function App() {
       label: `${item} | ratio:${ratio}`,
       data: [{ x: cost, y: impact }],
       backgroundColor: "red",
-      pointRadius: 10,
+      pointRadius: 7,
     };
   };
 
   return (
     <div className="App">
-      <table id="ratios">
-        <tbody>
-          <tr>
-            <th>Cost</th>
-            <th>Impact</th>
-            <th>Item</th>
-            <th>Ratio [impact / cost]</th>
-          </tr>
-          {byPrice
-            .map(simpleData)
-            .sort((a, b) => b.ratio - a.ratio)
-            .map(({ cost, impact, item, ratio }) => (
-              <tr key={cost}>
-                <td>{cost}</td>
-                <td>{impact}</td>
-                <td>{item.toLowerCase()}</td>
-                <td>{ratio}</td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      <div className="box">
+      <tdbody>
+        <tr>
+          <th>sorted by cost (from low high) </th>
+          <th>sorted by impact (from low to high)</th>
+        </tr>
+        <tr>
+          <td>
+            <textarea
+              name="byconst"
+              rows="15"
+              cols="50"
+              value={costArray}
+              onChange={(e) => setcostArray(e.target.value)}
+            ></textarea>
+          </td>
+          <td>
+            <textarea
+              name="byconst"
+              rows="15"
+              cols="50"
+              value={impactArray}
+              onChange={(e) => setimpactArray(e.target.value)}
+            ></textarea>
+          </td>
+          {console.log(
+            "OUTPUT sorted by ratio >>",
+            costParsed.map(simpleData).sort((a, b) => b.ratio - a.ratio)
+          )}
+          <td>find console.log() for ratio json</td>
+        </tr>
+      </tdbody>
+      <div style={{ display: "flex" }}>
+        <table id="ratios" style={{ maxWidth: "30%" }}>
+          <tbody>
+            <tr>
+              <th>Cost</th>
+              <th>Impact</th>
+              <th>Item</th>
+              <th>Ratio [impact / cost]</th>
+            </tr>
+            {costParsed
+              .map(simpleData)
+              .sort((a, b) => b.ratio - a.ratio)
+              .map(({ cost, impact, item, ratio }) => (
+                <tr key={cost}>
+                  <td>{cost}</td>
+                  <td>{impact}</td>
+                  <td>{item.toLowerCase()}</td>
+                  <td>{ratio}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+
         <Scatter
-          data={{ datasets: byPrice.map(formatedData) }}
+          style={{ maxWidth: "70%", maxHeight: "70%" }}
+          data={{ datasets: costParsed.map(formatedData) }}
           options={{
             plugins: {
               legend: {
                 display: false,
-                // position: "left",
-                // labels: {
-                //   usePointStyle: true,
-                // },
               },
             },
             scales: {
               y: {
+                position: "center",
                 title: {
                   display: true,
-                  font: { size: "20px" },
-                  text: "low impact >>> big impact",
+                  font: { size: "15px" },
+                  text: "big <<< low (impact)",
+                  padding: 100,
                 },
-                beginAtZero: true,
               },
               x: {
+                position: "center",
                 title: {
                   display: true,
-                  font: { size: "20px" },
+                  font: { size: "15px" },
                   text: "cheap >>> expensive",
+                  padding: 100,
                 },
-                beginAtZero: true,
               },
             },
           }}
         />
       </div>
-      <div>
-      </div>
-      <tbody>
-        <tr>
-          <th>Input1</th>
-          <th>Input2</th>
-          <th>Output</th>
-        </tr>
-        <tr>
-          <td>
-            <pre>{`const byPrice = ` + JSON.stringify(byPrice, null, 2)}</pre>
-          </td>
-          <td>
-            <pre>
-              {`const byImpact = ` + JSON.stringify(byImpact, null, 2)}
-            </pre>
-          </td>
-          <td>
-            <pre>
-              {JSON.stringify(
-                byPrice.map(simpleData).sort((a, b) => b.ratio - a.ratio),
-                null,
-                2
-              )}
-            </pre>
-          </td>
-        </tr>
-      </tbody>
     </div>
   );
 }
