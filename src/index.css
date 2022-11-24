@@ -13,7 +13,8 @@ code {
 }
 
 .box {
-  padding: 50px;
+  padding: 1px;
+  width: 50vh;
 }
 
 #ratios {

@@ -121,38 +121,43 @@ function App() {
               ))}
           </tbody>
         </table>
-
-        <Scatter
-          style={{ maxWidth: "70%", maxHeight: "70%" }}
-          data={{ datasets: costParsed.map(formatedData) }}
-          options={{
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
-            scales: {
-              y: {
-                position: "center",
-                title: {
-                  display: true,
-                  font: { size: "15px" },
-                  text: "big <<< low (impact)",
-                  padding: 100,
+        <div className="box">
+          <Scatter
+            height={null} // must stay null, otherwise 'aspectRatio' won't work.  Adjust instead the wraping div.
+            width={null} // must stay null, otherwise 'aspectRatio' won't work. Adjust instead the wraping div.
+            data={{ datasets: costParsed.map(formatedData) }}
+            options={{
+              aspectRatio: 1,
+              plugins: {
+                legend: {
+                  display: false,
                 },
               },
-              x: {
-                position: "center",
-                title: {
-                  display: true,
-                  font: { size: "15px" },
-                  text: "cheap >>> expensive",
-                  padding: 100,
+              scales: {
+                y: {
+                  grace: "5%",
+                  position: "center",
+                  title: {
+                    display: true,
+                    font: { size: "15px" },
+                    text: "big <<< low (impact)",
+                    padding: 100,
+                  },
+                },
+                x: {
+                  grace: "5%",
+                  position: "center",
+                  title: {
+                    display: true,
+                    font: { size: "15px" },
+                    text: "cheap >>> expensive",
+                    padding: 100,
+                  },
                 },
               },
-            },
-          }}
-        />
+            }}
+          />
+        </div>
       </div>
     </div>
   );
