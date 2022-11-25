@@ -1,8 +1,8 @@
 version: '3.7'
 
 services:
-  foodapp:
-    container_name: foodapp
+  simple:
+    container_name: simple
     build:
       context: .
       dockerfile: Dockerfile
